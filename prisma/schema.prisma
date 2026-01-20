@@ -1,0 +1,99 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+
+ model User {
+   id             Int       @id @default(autoincrement())
+   password       String
+   email          String        @unique
+   role           String     // "pacient" | "psy" | "admin"
+   status         String     @default("active")
+   created_at     DateTime   @default(now())
+
+   pacient        Pacient? 
+   psy            Psy?     
+ }
+
+ /////////////////////////////////////////////////////
+// //                  PACIENT
+// /////////////////////////////////////////////////////
+
+ model Pacient {
+   id             Int           @id @default(autoincrement())
+   name           String
+   email          String        @unique
+   user_id        Int           @unique
+   address        String
+   phone          String
+   profile_photo  String?
+   gender         String
+   created_at     DateTime      @default(now())
+   deleted_at     DateTime?
+
+   user           User        @relation(fields: [user_id], references: [id])
+
+   consultations  Consultation[] @relation("PacientConsultations")
+   messages       Message[]      @relation("PacientMessages")
+ }
+
+// /////////////////////////////////////////////////////
+// //                    PSY
+// /////////////////////////////////////////////////////
+
+model Psy {
+   id             Int            @id @default(autoincrement())
+   name           String
+   email          String         @unique
+   user_id        Int            @unique
+   address        String
+   phone          String
+   gender         String 
+   profile_photo  String?
+   created_at     DateTime       @default(now())
+   deleted_at     DateTime?
+   user           User           @relation(fields: [user_id], references: [id])
+
+   consultations  Consultation[] @relation("PsyConsultations")
+   messages       Message[]      @relation("PsyMessages")
+}
+
+// /////////////////////////////////////////////////////
+// //                CONSULTATION
+// /////////////////////////////////////////////////////
+
+ model Consultation {
+   id           Int       @id @default(autoincrement())
+   dateTime     DateTime  
+   status       String    @default("Pendente") // Pendente | Atendido | Cancelado
+   notes        String?
+   pacient_id   Int
+   psy_id       Int?
+   type         String
+   reason       String
+   gender_pref  String
+   time_to_take String
+
+   pacient      Pacient    @relation("PacientConsultations", fields: [pacient_id], references: [id])
+   psy          Psy?        @relation("PsyConsultations", fields: [psy_id], references: [id])
+ }
+// /////////////////////////////////////////////////////
+// //                  MESSAGE (CHAT)
+// /////////////////////////////////////////////////////
+
+ model Message {
+   id            Int       @id @default(autoincrement())
+   content       String?
+   timestamp     DateTime  @default(now())
+   sender_role   String?    // "pacient" | "psy"
+   pacient_id    Int
+   psy_id        Int
+
+   pacient       Pacient @relation("PacientMessages", fields: [pacient_id], references: [id])
+   psy           Psy     @relation("PsyMessages", fields: [psy_id], references: [id])
+}

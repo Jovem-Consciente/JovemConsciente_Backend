@@ -1,0 +1,90 @@
+import prisma from "../prisma.js"
+import { catchConsultation } from "../utils/consultation.js";
+
+export const assum_consult = async(req, res) =>{
+  try {
+    const {id, role} = req.user
+    const id_consult = Number(req.params.id)
+    console.log(id_consult)
+
+    if (role !== "Psy") {
+      return res.status(403).json({ error: "Apenas psicólogos" });
+    }
+
+    await prisma.consultation.update({
+      where:{
+        id: id_consult
+      },
+      data:{
+        psy_id: id
+      }
+    })
+
+      return res.status(200).json({message: "Consulta atribuida"});
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: "Erro interno" });
+    }
+ 
+};
+
+export const my_consults = async (req, res) => {
+  try {
+    const { id } = req.user;
+
+    const consultations = await prisma.consultation.findMany({
+      where: {
+        psy_id: id, 
+      },
+      include: {
+        pacient: true, 
+      },
+      orderBy: {
+        dateTime: "asc",
+      },
+    });
+
+    const formatted = consultations.map(c => ({
+      id: c.id,
+      reason: c.reason,
+      type: c.type,
+      pacient_name: c.pacient?.name ?? "Desconhecido",
+      pacient_email: c.pacient?.email ?? "",
+      url_profile: c.pacient?.profile_photo
+        ? `http://localhost:3000/${c.pacient.profile_photo}`
+        : null,
+      date: c.dateTime.toISOString().split("T")[0],
+      time: c.dateTime.toISOString().split("T")[1].slice(0, 5),
+    }));
+
+    return res.status(200).json(formatted);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Erro ao buscar consultas" });
+  }
+};
+
+
+
+export const listConsultation = async (req, res) => {
+  try {
+    const { id, role } = req.user;
+
+    const consultations = await catchConsultation({ id, role });
+
+     const formatted = consultations.map(c => ({
+      id: c.id,
+      reason: c.reason,
+      type: c.type,
+      psy_name: c.psy?.name ?? "Não definido",
+      date: c.dateTime.toISOString().split("T")[0],
+      time: c.dateTime.toISOString().split("T")[1].slice(0, 5),
+    }));
+
+    return res.status(200).json(formatted);
+
+  } catch (error) {
+    console.error(error);
+    return res.status(400).json({ error: error.message });
+  }
+};
