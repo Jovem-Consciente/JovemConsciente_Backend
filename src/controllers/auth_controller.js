@@ -5,8 +5,6 @@ import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../config/jwt.js";
 
 
-
-
 export const register = async (req, res) => {
   const { name, email, password, role, address, phone, gender } = req.body;
   const filePath = req.file?.path || null;
@@ -32,7 +30,7 @@ export const register = async (req, res) => {
         );
 
         res.status(201).json({
-        message: "Usuário criado com sucesso",
+        message: "Utilizador criado com sucesso",
         token,
         user: { id: user.id, email: user.email, role: user.role },
     });
