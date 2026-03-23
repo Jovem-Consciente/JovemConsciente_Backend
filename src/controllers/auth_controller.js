@@ -74,6 +74,7 @@ export const login = async (req, res) => {
         role: user.role,
       },
     });
+    console.log(user);
 
   } catch (error) {
     res.status(500).json({ error: error.message });

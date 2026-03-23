@@ -5,10 +5,11 @@ import { getAvailablePsychologist } from "../utils/consultation.js";
 export const createConsultation = async (req, res) => {
   const { type, reason, notes, gender_pref, time, date, time_to_take } = req.body;
   const { id: user_id } = req.user;
+  console.log(id);
 
   try {
    
-    const dateTime = new Date(`${date}T${time}:00`); // ex: "2026-02-11T12:30:00"
+    const dateTime = new Date(`${date}T${time}:00`); 
 
     const psychologist = await getAvailablePsychologist(
       gender_pref,
@@ -26,7 +27,6 @@ export const createConsultation = async (req, res) => {
       type: type,
       reason: reason,
       notes:notes,
-      pacient_id: user_id,
       dateTime: dateTime,
       time_to_take: time_to_take,
       gender_pref: gender_pref

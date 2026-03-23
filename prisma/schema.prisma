@@ -39,7 +39,7 @@ datasource db {
    user           User        @relation(fields: [user_id], references: [id])
 
    consultations  Consultation[] @relation("PacientConsultations")
-   messages       Message[]      @relation("PacientMessages")
+  
  }
 
 // /////////////////////////////////////////////////////
@@ -60,7 +60,7 @@ model Psy {
    user           User           @relation(fields: [user_id], references: [id])
 
    consultations  Consultation[] @relation("PsyConsultations")
-   messages       Message[]      @relation("PsyMessages")
+  
 }
 
 // /////////////////////////////////////////////////////
@@ -81,6 +81,7 @@ model Psy {
 
    pacient      Pacient    @relation("PacientConsultations", fields: [pacient_id], references: [id])
    psy          Psy?        @relation("PsyConsultations", fields: [psy_id], references: [id])
+   messages    Message[]
  }
 // /////////////////////////////////////////////////////
 // //                  MESSAGE (CHAT)
@@ -90,10 +91,8 @@ model Psy {
    id            Int       @id @default(autoincrement())
    content       String?
    timestamp     DateTime  @default(now())
-   sender_role   String?    // "pacient" | "psy"
-   pacient_id    Int
-   psy_id        Int
+   sender_role   String?   
+   consultation_id Int
+   consultation   Consultation @relation(fields: [consultation_id], references: [id])
 
-   pacient       Pacient @relation("PacientMessages", fields: [pacient_id], references: [id])
-   psy           Psy     @relation("PsyMessages", fields: [psy_id], references: [id])
 }

@@ -1,11 +1,13 @@
 import "dotenv/config";
 import app from "./app.js";
+import http from "http";
 import prisma from "./prisma.js";
 import { Server} from "socket.io";
 import socketAuth from "./middlewares/socket_middleware.js";
-import {chat} from "./socket/chat.js"
+import chat from "./socket/chat.js"
 
 const PORT = process.env.PORT || 3000;
+const server = http.createServer(app);
 
 const startServer = async () => {
   try {
