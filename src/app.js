@@ -15,9 +15,7 @@ app.use(cookieParser());
 app.use(cors(
   {
     origin: [
-      "http://localhost:3001",
-      // "http://localhost:3002",
-      // "http://localhost:3003",
+      "http://localhost:3001"
     ],
     credentials: true, 
   }
@@ -29,16 +27,9 @@ app.use("/auth", authRoutes)
 app.use("/pacient", pacientRoutes)
 app.use("/psy", psyRoutes)
 
-app.get("/debug-auth", authMiddleware, (req, res) => {
-  res.json({
-    cookies: req.cookies,
-    user: req.user || null,
-  });
-});
-
 app.get("/", async (req, res) => {
   try {
-    // Testa a conexão com a base de dados
+  
     await prisma.$connect();
     res.json({ message: "Conexão com a DB: OK " });
   } catch (error) {
