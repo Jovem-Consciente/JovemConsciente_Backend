@@ -39,7 +39,7 @@ async function seeder() {
                 create:{
                     email : "carlajonas@gmail.com",
                     password: await hashPassword('carla2026'),
-                    role: "PsyAdmin"
+                    role: "Psy"
                 }
             }
         }

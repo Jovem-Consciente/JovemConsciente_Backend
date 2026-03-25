@@ -80,4 +80,38 @@ export const login = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-;
+
+export const get_data = async(req, res) =>{
+  const user = req.user;
+
+    const model =
+      user.role === "Pacient"
+        ? prisma.pacient
+        : user.role === "Psy"
+        ? prisma.psy
+        : null;
+
+    if (!model) {
+      return res.status(400).json({ message: "Role inválido" });
+    }
+
+    const user_data = await model.findFirst({
+      where: { user_id: user.id }
+    });
+
+    if (!user_data) {
+      return res.status(404).json({ message: "Usuario nao encontrado" });
+    }
+    
+    return res.json({
+      email: user_data.email,
+      name: user_data.name,
+      phone: user_data.phone,
+      photo_profile: user_data.profile_photo
+        ? `http://localhost:3000/${user_data.profile_photo}`
+        : null,
+    });
+
+    
+}
+

@@ -26,7 +26,7 @@ app.use(express.json());
 app.use("/auth", authRoutes)
 app.use("/pacient", pacientRoutes)
 app.use("/psy", psyRoutes)
-
+app.use('/uploads', express.static('uploads'))
 app.get("/", async (req, res) => {
   try {
   
