@@ -5,7 +5,12 @@ export const assum_consult = async(req, res) =>{
   try {
     const {id, role} = req.user
     const id_consult = Number(req.params.id)
-    console.log(id_consult)
+    
+    const psy = await prisma.psy.findFirst({
+      where:{
+        user_id: id
+      }
+    });
 
     if (role !== "Psy") {
       return res.status(403).json({ error: "Apenas psicólogos" });
@@ -16,7 +21,7 @@ export const assum_consult = async(req, res) =>{
         id: id_consult
       },
       data:{
-        psy_id: id
+        psy_id: psy.id
       }
     })
 
@@ -32,9 +37,14 @@ export const my_consults = async (req, res) => {
   try {
     const { id } = req.user;
 
+    const psy = await prisma.psy.findFirst({
+      where:{
+        user_id: id
+      }
+    });
     const consultations = await prisma.consultation.findMany({
       where: {
-        psy_id: id, 
+        psy_id: psy.id, 
       },
       include: {
         pacient: true, 
@@ -57,6 +67,7 @@ export const my_consults = async (req, res) => {
       time: c.dateTime.toISOString().split("T")[1].slice(0, 5),
     }));
 
+    console.log(formatted);
     return res.status(200).json(formatted);
   } catch (error) {
     console.error(error);
@@ -88,3 +99,4 @@ export const listConsultation = async (req, res) => {
     return res.status(400).json({ error: error.message });
   }
 };
+

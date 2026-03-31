@@ -16,4 +16,5 @@ router.put("/assum_consult/:id", authMiddleware, authorizeRoles("Psy", "Admin"),
 router.get("/list_consults", authMiddleware, authorizeRoles("Psy"), listConsultation)
 router.get("/list_myconsults", authMiddleware, authorizeRoles("Psy"), my_consults)
 
+
 export default router;

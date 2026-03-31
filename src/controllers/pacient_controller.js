@@ -55,7 +55,7 @@ export const createConsultation = async (req, res) => {
 
 export const listConsultation = async (req, res) => {
   try {
-    const { id, role } = req.user;
+    const { id} = req.user;
     const pacient= await prisma.pacient.findFirst(
       {
         where:{ 
@@ -65,20 +65,24 @@ export const listConsultation = async (req, res) => {
     )
 
     const pacient_id = pacient.id;
-    const consultations = await catchConsultation({ pacient_id, role });
-
+    const consultations = await prisma.consultation.findMany({
+      where: { pacient_id },
+      include: {
+        psy: true
+      }
+    });
      const formatted = consultations.map(c => ({
       id: c.id,
       reason: c.reason,
       type: c.type,
-      psy_name: c.psy?.name ?? "A definir",
+      psy_name: c.psy?.name || "A definir...",
       date: c.dateTime.toISOString().split("T")[0],
       time: c.dateTime.toISOString().split("T")[1].slice(0, 5),
       phone: pacient.phone,
       name: pacient.name,
       email:pacient.email,
     }));
-
+    console.log(consultations);
     return res.status(200).json(formatted);
 
   } catch (error) {
