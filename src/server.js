@@ -2,7 +2,7 @@ import "dotenv/config";
 import app from "./app.js";
 import http from "http";
 import prisma from "./prisma.js";
-import { Server} from "socket.io";
+import { Server } from "socket.io";
 import socketAuth from "./middlewares/socket_middleware.js";
 import chat from "./socket/chat.js"
 
@@ -29,7 +29,7 @@ const io = new Server(server, {
   }
 });
 
-io.use(socketAuth);
+
 chat(io);
 startServer();
 

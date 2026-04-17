@@ -100,3 +100,42 @@ export const listConsultation = async (req, res) => {
   }
 };
 
+
+export const get_data_chat = async (req, res) => {
+  try {
+    const id_consult = Number(req.params.id);
+
+    const consult = await prisma.consultation.findFirst({
+      where: {
+        id: id_consult
+      },
+      include: {
+        pacient: true,
+        psy: true
+      }
+    });
+
+    if (!consult) {
+      return res.status(404).json({ error: "Consulta não encontrada" });
+    }
+    console.log(consult);
+    return res.json({
+      pacient: {
+        email: consult.pacient.email,
+        name: consult.pacient.name,
+        phone: consult.pacient.phone,
+        photo_profile: consult.pacient.profile_photo
+          ? `http://localhost:3000/${consult.pacient.profile_photo}`
+          : null,
+      },
+      
+    }
+  );
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Erro interno" });
+  }
+}
+
+
