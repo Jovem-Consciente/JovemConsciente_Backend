@@ -32,31 +32,31 @@ export const catchConsultation = async({
     role
 })=>{
     return await prisma.$transaction(async(tx)=>{
-    
+        console.log(role)
         let consultations;
 
         if( role === "Admin"){
-            // consultations = await prisma.consultation.findMany({
-            //     include:{
-            //         pacient: true,
-            //         psy: true
-            //     }
-            // });
+            consultations = await prisma.consultation.findMany();
+            
         }else if( role === "Pacient"){
-            consultations = await prisma.consultation.findMany({
-              
+            pacient_data = await prisma.pacient.findFirst({
                 where:{
-                    pacient_id: id
+                    user_id: id
+                }
+            });
+            consultations = await prisma.consultation.findMany({
+                where:{
+                    pacient_id: pacient_data.id
+                },
+                include: {
+                    psy: true
                 }
             });
         } else if (role === "Psy"){
+          
             consultations = await prisma.consultation.findMany({
                where: {
-                    status: "Pendente",
-                    psy_id: null,
-                    dateTime: {
-                    gte: new Date()
-                    }
+                    psy_id: null
                 },
                 orderBy: {
                     dateTime: "asc"

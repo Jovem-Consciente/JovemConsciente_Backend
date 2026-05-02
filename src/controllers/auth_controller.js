@@ -4,6 +4,7 @@ import {registerUser} from "../utils/register.js"
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../config/jwt.js";
 
+// funcao de registo
 
 export const register = async (req, res) => {
   const { name, email, password, role, address, phone, gender } = req.body;
@@ -40,6 +41,7 @@ export const register = async (req, res) => {
   }
 };
 
+//funcao de autenticacao
 
 export const login = async (req, res) => {
   const { email, password } = req.body;
@@ -81,7 +83,9 @@ export const login = async (req, res) => {
   }
 };
 
-export const get_data = async(req, res) =>{
+//funcao para buscar dados
+
+export const get_data_auth = async(req, res) =>{
   const user = req.user;
 
     const model =
@@ -114,37 +118,6 @@ export const get_data = async(req, res) =>{
     
 }
 
-export const get_messages = async (req, res) =>{
-
-  const id_consult = Number(req.params.id);
-  try {
-    const consult = await prisma.consultation.findFirst({
-      where: {
-        id: id_consult
-      },
-      include: {
-        pacient: true,
-        psy: true,
-        messages: {
-          orderBy: {
-            timestamp: "asc"
-          }
-        }
-      }
-    });
-
-    return res.json({
-      pacient: consult.pacient,
-      psy: consult.psy,
-      messages: consult.messages
-    });
-
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: "Erro interno" });
-  }
-  
-}
 
 
 
