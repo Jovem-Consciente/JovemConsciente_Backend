@@ -1,5 +1,5 @@
 import express from "express"
-import {register, login, get_data_auth } from "../controllers/auth_controller.js"
+import {register, login, get_data_auth, counter } from "../controllers/auth_controller.js"
 import authorizeRoles from "../middlewares/role_middleware.js"
 import { authMiddleware } from "../middlewares/auth_middleware.js";
 import role_middleware from "../middlewares/role_middleware.js"
@@ -11,6 +11,6 @@ const router = express.Router()
 router.post("/register", upload.single("file"), register);
 router.post("/login",upload.none(), login );
 router.get("/get_data", authMiddleware, authorizeRoles("Pacient", "Psy"), get_data_auth);
-
+router.get("/get_dash_data", authMiddleware, authorizeRoles("Admin", "Psy", "Pacient"), counter)
 export default router;
 

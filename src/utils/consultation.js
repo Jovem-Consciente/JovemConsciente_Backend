@@ -36,7 +36,12 @@ export const catchConsultation = async({
         let consultations;
 
         if( role === "Admin"){
-            consultations = await prisma.consultation.findMany();
+            consultations = await prisma.consultation.findMany({
+                include:{
+                    psy:true,
+                    pacient:true
+                }
+            });
             
         }else if( role === "Pacient"){
             pacient_data = await prisma.pacient.findFirst({

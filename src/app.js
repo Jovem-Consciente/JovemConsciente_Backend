@@ -2,8 +2,9 @@ import express from "express";
 import cors from "cors";
 import prisma from "./prisma.js";
 import authRoutes from "./routes/auth.routes.js"
-import pacientRoutes from "./routes/pacient.routes.js"
-import psyRoutes from "./routes/psy.routes.js"
+import consultRoutes from "./routes/consults.routes.js"
+import messageRoutes from "./routes/message.routes.js"
+import adminRoutes from "./routes/admin.routes.js"
 import cookieParser from "cookie-parser";
 import { authMiddleware } from "./middlewares/auth_middleware.js";
 
@@ -24,8 +25,9 @@ app.use(cors(
 app.use(express.json());
 
 app.use("/auth", authRoutes)
-app.use("/pacient", pacientRoutes)
-app.use("/psy", psyRoutes)
+app.use("/consult", consultRoutes)
+app.use("/message", messageRoutes)
+app.use("/admin", adminRoutes)
 app.use('/uploads', express.static('uploads'))
 app.get("/", async (req, res) => {
   try {

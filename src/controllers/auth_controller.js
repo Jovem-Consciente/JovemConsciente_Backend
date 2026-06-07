@@ -118,6 +118,77 @@ export const get_data_auth = async(req, res) =>{
     
 }
 
+export const counter = async(req,res)=>{
+  const user = req.user;
+  let data_counters = [];
+  try {
+    if(user.role === "Pacient"){
+        
+        const pacient_data = await prisma.pacient.findFirst({
+          where:{ user_id: user.id  }
+        })
+        const counter_consults = await prisma.consultation.count({
+          where:{ pacient_id: pacient_data.id}
+        });
+        const counter_consults_attended= await prisma.consultation.count({
+          where:{ pacient_id: pacient_data.id, status : "Atendido"}
+        });
+
+        const unpayed = await prisma.payment.aggregate({
+          where:{ 
+            pacient_id: pacient_data.id,
+            status:"Not payed"},
+
+          _sum:{
+              amount: true
+            }
+        })
+        
+        data_counters = {
+              consults: counter_consults,
+              unpayed: unpayed._sum.amount,
+              attended: counter_consults_attended
+            }
+    } else if(user.role === "Admin"){
+        
+          const counter_consults = await prisma.consultation.count();
+          const counter_pacient = await prisma.pacient.count();
+          const counter_psy = await prisma.psy.count();
+          const counter_consults_attended = await prisma.consultation.count({
+              where:{
+                status: "Atendido"
+              }
+            }
+          )
+
+          data_counters = {
+              consults: counter_consults,
+              pacients: counter_pacient,
+              psys: counter_psy,
+              attended: counter_consults_attended
+            }
+      }else if(user.role === "Psy"){
+
+      }else {
+        return res.status(403).json({ message: "Invalid role" });
+      }
+
+      return res.status(200).json(data_counters);
+    } catch (error) {
+      console.error(error);
+        return res.status(500).json({ error: "Erro ao buscar dados" });
+    }
+  
+}
+  
+ 
+
+
+
+
+
+
+
 
 
 

@@ -54,14 +54,15 @@ export const createConsultation = async (req, res) => {
 
 //listar consults paciente
 export const list_consullts = async (req, res) => {
+  
   try {
     const user = req.user;
     
     const consultations = await catchConsultation({id: user.id, role:user.role});
-
+     
     let formatted = [];
 
-    console.log(consultations);
+  
 
     if (user.role === 'Psy') {
       formatted = consultations.map(c => ({
@@ -91,6 +92,9 @@ export const list_consullts = async (req, res) => {
         pacient_profile: c.pacient?.profile_photo
           ? `http://localhost:3000/${c.pacient.profile_photo}`
           : null,
+        url_profile_psy: c.psy?.profile_photo
+          ? `http://localhost:3000/${c.psy.profile_photo}`
+          : null,
         psy_name: c.psy?.name ?? "Desconhecido",
         psy_email: c.psy?.email ?? "",
         psy_profile: c.psy?.profile_photo
@@ -105,6 +109,7 @@ export const list_consullts = async (req, res) => {
       return res.status(403).json({ message: "Invalid role" });
     }
 
+   
     return res.status(200).json(formatted);
 
   } catch (error) {
@@ -116,7 +121,6 @@ export const list_consullts = async (req, res) => {
 // pegar as consultas do user autenticado
 
 export const get_auth_consults = async (req, res) => {
-
   try {
     const user  = req.user;
     let auth_data;
